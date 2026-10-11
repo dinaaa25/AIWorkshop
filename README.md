@@ -66,3 +66,4 @@ npm run preview
 ```
 
 Set the same `NUXT_*` variables on the host. Nuxt does not read `.env` after the server is built, so production values must be provided as environment variables.
+# AIWorkshop
