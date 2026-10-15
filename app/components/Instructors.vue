@@ -70,7 +70,7 @@ const achievements: Achievement[] = [
                 :style="{ zIndex: instructors.length - i, transitionDelay: `${200 + (i + 1) * 120}ms` }"
               >
             </div>
-            <span class="text-xs font-medium text-neutral-500">2 instructores · todo el día con el grupo</span>
+            <span class="text-xs font-medium text-neutral-500">2 instructores - todo el día con el grupo</span>
           </div>
         </div>
 
