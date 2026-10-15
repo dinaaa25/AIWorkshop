@@ -79,13 +79,11 @@ const markDelay = (index: number) => ({ transitionDelay: `${150 + index * 50}ms`
           </span>
 
           <h1 v-reveal="80" class="mt-5 text-4xl font-semibold leading-[1.08] tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl">
-            Use la IA para ahorrar horas y dinero en su empresa.
+            IA para ahorrar horas y dinero en su empresa.
           </h1>
 
           <p v-reveal="160" class="mt-5 max-w-xl text-base leading-relaxed text-neutral-600 sm:text-lg">
-            Muchos CEOs saben que la IA importa, pero no saben por dónde empezar.
-            Mientras tanto, otras empresas ya trabajan más rápido y gastan menos.
-            En un día le mostramos qué usar, cuánto cuesta y cómo empezar el lunes.
+            Usted sabe que la IA puede cambiar su empresa. Lo difícil es saber qué funciona de verdad: sobran herramientas y promesas, y elegir mal cuesta tiempo y dinero. Mientras tanto, otras empresas ya trabajan más rápido y gastan menos. En un solo día, con casos y números reales, identificará qué procesos puede automatizar y por dónde empezar, y se llevará un plan claro y un kit de 13 herramientas y guías listas para usar.
           </p>
 
           <dl v-reveal="240" class="mt-8 grid grid-cols-2 gap-4 border-t border-neutral-200 pt-6 sm:grid-cols-4">
