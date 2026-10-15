@@ -26,7 +26,7 @@ const glance = [
   { title: 'Para quién', text: 'CEOs, dueños y gerentes que deciden en qué invierte la empresa.' },
   { title: 'Qué se lleva', text: 'Un plan claro para su empresa y un kit de 13 herramientas listas para usar.' },
   { title: 'Cómo es', text: 'Práctico. Casos reales, números reales y tiempo para hablar de su empresa.' },
-  { title: 'Fecha y lugar', text: 'Después de pagar, le enviamos por correo la fecha, la hora y el lugar.' },
+  { title: 'Fecha y lugar', text: '5 de diciembre, Ciudad de Guatemala. Después de pagar, le enviamos por correo la hora y el lugar exacto.' },
 ]
 
 const audiences = [
@@ -91,11 +91,11 @@ const markDelay = (index: number) => ({ transitionDelay: `${150 + index * 50}ms`
           <dl v-reveal="240" class="mt-8 grid grid-cols-2 gap-4 border-t border-neutral-200 pt-6 sm:grid-cols-4">
             <div>
               <dt class="text-[11px] font-medium uppercase tracking-wide text-neutral-400">Lugar</dt>
-              <dd class="mt-1 text-sm font-medium text-neutral-800">Guatemala</dd>
+              <dd class="mt-1 text-sm font-medium text-neutral-800">Ciudad de Guatemala<sup class="ml-0.5 text-neutral-400">(i)</sup></dd>
             </div>
             <div>
-              <dt class="text-[11px] font-medium uppercase tracking-wide text-neutral-400">Fecha y hora</dt>
-              <dd class="mt-1 text-sm font-medium text-neutral-800">Por correo al comprar</dd>
+              <dt class="text-[11px] font-medium uppercase tracking-wide text-neutral-400">Fecha</dt>
+              <dd class="mt-1 text-sm font-medium text-neutral-800">5 de diciembre</dd>
             </div>
             <div>
               <dt class="text-[11px] font-medium uppercase tracking-wide text-neutral-400">Formato</dt>
@@ -108,6 +108,9 @@ const markDelay = (index: number) => ({ transitionDelay: `${150 + index * 50}ms`
               </dd>
             </div>
           </dl>
+          <p v-reveal="280" class="mt-4 text-xs leading-relaxed text-neutral-500">
+            <span class="text-neutral-400">(i)</span> El lugar exacto se envía por correo después de la compra.
+          </p>
         </div>
 
         <PurchaseCard v-reveal="200" />
@@ -356,7 +359,7 @@ const markDelay = (index: number) => ({ transitionDelay: `${150 + index * 50}ms`
     <footer class="border-t border-neutral-200 bg-neutral-50">
       <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-xs text-neutral-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
         <span>Taller Ejecutivo de IA · Guatemala</span>
-        <span>La fecha, la hora y el lugar se envían por correo después de la compra.</span>
+        <span>5 de diciembre, Ciudad de Guatemala. La hora y el lugar exacto se envían por correo después de la compra.</span>
       </div>
     </footer>
   </div>

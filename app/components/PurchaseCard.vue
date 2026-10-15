@@ -65,7 +65,7 @@ const highlights = [
     <div class="mt-5 rounded-2xl bg-neutral-50 p-4">
       <p class="text-sm font-medium text-neutral-900">¿Cuándo y dónde?</p>
       <p class="mt-1 text-sm leading-relaxed text-neutral-500">
-        Después de pagar, le enviamos por correo la fecha, la hora y el lugar del taller.
+        Después de pagar, le enviamos por correo la hora y el lugar exacto del taller (5 de diciembre, Ciudad de Guatemala).
       </p>
     </div>
 

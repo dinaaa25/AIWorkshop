@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const included = [
-  { title: 'Un día completo de taller', detail: 'Presencial, en Guatemala, con grupo pequeño.' },
+  { title: 'Un día completo de taller', detail: 'Presencial, en Ciudad de Guatemala, con grupo pequeño.' },
   { title: 'El programa completo', detail: 'Casos reales, herramientas, números, seguridad y cómo armar su equipo.' },
   { title: 'Kit de implementación del CEO', detail: '13 plantillas, guías y herramientas para usar desde el lunes.' },
   { title: 'Una hora para su caso', detail: 'Traiga su situación y la revisamos con usted.' },
@@ -137,7 +137,7 @@ const exampleMath = [
               Comprar mi entrada
             </a>
             <p class="mt-3 text-center text-xs text-neutral-500">
-              Pago seguro con Stripe. Le enviamos la fecha, la hora y el lugar por correo.
+              Pago seguro con Stripe. Taller el 5 de diciembre. Le enviamos la hora y el lugar exacto por correo.
             </p>
           </div>
         </div>

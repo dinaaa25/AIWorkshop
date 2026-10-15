@@ -47,7 +47,7 @@ export default defineNuxtConfig({
         {
           property: 'og:description',
           content:
-            'Un día para que su empresa empiece a ahorrar horas y dinero con IA. Compre su entrada: $799 USD. La fecha, la hora y el lugar se envían por correo.',
+            'Un día para que su empresa empiece a ahorrar horas y dinero con IA. Compre su entrada: $799 USD. 5 de diciembre, Ciudad de Guatemala. La hora y el lugar exacto se envían por correo.',
         },
         { property: 'og:type', content: 'website' },
       ],
