@@ -23,7 +23,7 @@
             Capacitación gratuita de Claude
           </p>
           <p class="mt-0.5 text-sm leading-relaxed text-neutral-600">
-            Aprenda a usar las funciones clave de Claude en su trabajo diario.
+            {{ claudeTraining.dateLabel }} · {{ claudeTraining.timeLabel }} ({{ claudeTraining.timeZoneLabel }}), por Google Meet.
           </p>
         </div>
       </div>

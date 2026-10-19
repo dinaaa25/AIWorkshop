@@ -51,8 +51,9 @@ async function submit() {
       Reserve su lugar.
     </h2>
     <p class="mt-3 text-sm leading-relaxed text-neutral-500">
-      Deje su correo y le enviaremos la fecha, la hora y los detalles para unirse
-      a la capacitación.
+      {{ claudeTraining.dateLabel }} · {{ claudeTraining.timeLabel }}
+      ({{ claudeTraining.timeZoneLabel }}), por Google Meet. Deje su correo para
+      reservar su lugar y recibir el enlace para agregarla a su calendario.
     </p>
 
     <form class="mt-6 grid gap-4" @submit.prevent="submit">
@@ -90,7 +91,7 @@ async function submit() {
     </p>
 
     <p class="mt-5 text-xs leading-relaxed text-neutral-400">
-      Solo usamos su correo para enviarle los detalles de esta capacitación.
+      Solo usamos su correo para el registro de esta capacitación.
     </p>
   </aside>
 </template>

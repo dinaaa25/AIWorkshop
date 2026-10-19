@@ -112,20 +112,35 @@ async function appendViaAppsScript(url: string, row: SheetRow): Promise<{ duplic
     redirect: 'follow',
   })
 
+  const text = await response.text()
+
   if (!response.ok) {
+    console.error('Apps Script error', row.target, response.status, response.url, text.slice(0, 500))
     throw createError({
       statusCode: 502,
       statusMessage: 'No se pudo actualizar la hoja de cálculo. Inténtelo de nuevo en breve.',
     })
   }
 
-  const payload = await response.json().catch(() => ({})) as { ok?: boolean, duplicate?: boolean, error?: string }
+  let payload: { ok?: boolean, duplicate?: boolean, error?: string }
+
+  try {
+    payload = JSON.parse(text)
+  }
+  catch {
+    console.error('Apps Script returned non-JSON', row.target, response.status, response.url, text.slice(0, 500))
+    throw createError({
+      statusCode: 502,
+      statusMessage: 'No se pudo actualizar la hoja de cálculo. Inténtelo de nuevo en breve.',
+    })
+  }
 
   if (payload.duplicate) {
     return { duplicate: true }
   }
 
   if (payload.ok === false) {
+    console.error('Apps Script rejected row', row.target, payload.error)
     throw createError({
       statusCode: 502,
       statusMessage: payload.error || 'No se pudo actualizar la hoja de cálculo.',

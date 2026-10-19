@@ -2,10 +2,10 @@
 useSeoMeta({
   title: 'Capacitación gratuita de Claude · 45 minutos',
   description:
-    'Capacitación gratuita de 45 minutos para aprender las funciones clave de Claude: redactar, analizar documentos y datos, crear artefactos, investigar y conectar sus herramientas.',
+    'Capacitación gratuita de 45 minutos por Google Meet, martes 27 de octubre a las 6:00 p. m. (hora de Guatemala). Aprenda las funciones clave de Claude: redactar, analizar documentos y datos, crear artefactos, investigar y conectar sus herramientas.',
   ogTitle: 'Capacitación gratuita de Claude · 45 minutos',
   ogDescription:
-    'Aprenda en 45 minutos a usar las funciones clave de Claude en su trabajo diario. Gratis. Inscríbase con su correo.',
+    'Aprenda en 45 minutos a usar las funciones clave de Claude en su trabajo diario. Gratis, por Google Meet, martes 27 de octubre a las 6:00 p. m. (hora de Guatemala).',
   themeColor: '#d97757',
 })
 
@@ -95,20 +95,23 @@ const featureDelay = (index: number) => ({ transitionDelay: `${index * 60}ms` })
 
           <dl v-reveal="240" class="mt-8 grid grid-cols-2 gap-4 border-t border-neutral-200 pt-6 sm:grid-cols-4">
             <div>
-              <dt class="text-[11px] font-medium uppercase tracking-wide text-neutral-400">Duración</dt>
-              <dd class="mt-1 text-sm font-medium text-neutral-800">45 minutos</dd>
+              <dt class="text-[11px] font-medium uppercase tracking-wide text-neutral-400">Fecha</dt>
+              <dd class="mt-1 text-sm font-medium text-neutral-800">{{ claudeTraining.dateLabel }}</dd>
+            </div>
+            <div>
+              <dt class="text-[11px] font-medium uppercase tracking-wide text-neutral-400">Hora</dt>
+              <dd class="mt-1 text-sm font-medium text-neutral-800">
+                {{ claudeTraining.timeLabel }}
+                <span class="block text-xs font-normal text-neutral-400">{{ claudeTraining.timeZoneLabel }}</span>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-[11px] font-medium uppercase tracking-wide text-neutral-400">Formato</dt>
+              <dd class="mt-1 text-sm font-medium text-neutral-800">En línea, Google Meet</dd>
             </div>
             <div>
               <dt class="text-[11px] font-medium uppercase tracking-wide text-neutral-400">Precio</dt>
               <dd class="mt-1 text-sm font-medium text-claude-dark">Gratis</dd>
-            </div>
-            <div>
-              <dt class="text-[11px] font-medium uppercase tracking-wide text-neutral-400">Nivel</dt>
-              <dd class="mt-1 text-sm font-medium text-neutral-800">Desde cero</dd>
-            </div>
-            <div>
-              <dt class="text-[11px] font-medium uppercase tracking-wide text-neutral-400">Fecha</dt>
-              <dd class="mt-1 text-sm font-medium text-neutral-800">Se envía por correo</dd>
             </div>
           </dl>
         </div>
@@ -206,7 +209,9 @@ const featureDelay = (index: number) => ({ transitionDelay: `${index * 60}ms` })
           </span>
           <div>
             <h2 class="text-xl font-semibold tracking-tight text-neutral-900">Los cupos son limitados.</h2>
-            <p class="mt-1 text-sm text-neutral-600">Inscríbase gratis y le enviamos los detalles por correo.</p>
+            <p class="mt-1 text-sm text-neutral-600">
+              {{ claudeTraining.dateLabel }} · {{ claudeTraining.timeLabel }} ({{ claudeTraining.timeZoneLabel }}). Inscríbase gratis.
+            </p>
           </div>
         </div>
         <a href="#inscripcion" class="inline-flex items-center gap-2 rounded-xl bg-claude px-4 py-3 text-sm font-semibold text-white transition hover:bg-claude-dark">

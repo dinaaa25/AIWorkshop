@@ -7,11 +7,6 @@ useSeoMeta({
 
 const signup = useState<{ email: string, duplicate: boolean } | null>('claude-signup', () => null)
 
-const steps = [
-  'Guardamos su correo en la lista de la capacitación.',
-  'Le enviaremos por correo la fecha, la hora y los detalles para unirse.',
-  'Si puede, cree antes una cuenta gratuita en claude.ai para seguir la demostración.',
-]
 </script>
 
 <template>
@@ -46,28 +41,46 @@ const steps = [
           {{ signup?.duplicate ? 'Ya estaba inscrito.' : '¡Listo, ya está inscrito!' }}
         </h1>
         <p v-reveal="200" class="mt-4 text-base leading-relaxed text-neutral-600">
-          <template v-if="signup?.email">
-            Le escribiremos a <strong class="font-semibold text-neutral-900">{{ signup.email }}</strong>
-            con los detalles de la capacitación gratuita de Claude.
-          </template>
-          <template v-else>
-            Le escribiremos con los detalles de la capacitación gratuita de Claude.
-          </template>
+          Guardamos su lugar<template v-if="signup?.email"> con el correo <strong class="font-semibold text-neutral-900">{{ signup.email }}</strong></template>.
+          Agregue la capacitación a su calendario para no olvidarla.
         </p>
 
-        <ol v-reveal="280" class="mt-10 space-y-3 rounded-3xl border border-neutral-200 bg-white p-6 text-left shadow-xl shadow-claude/10">
-          <li
-            v-for="(step, i) in steps"
-            :key="step"
-            class="flex items-start gap-3 text-sm leading-relaxed text-neutral-700 transition duration-500 unrevealed:translate-y-1.5 unrevealed:opacity-0"
-            :style="{ transitionDelay: `${400 + i * 110}ms` }"
-          >
-            <span class="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-claude/10 text-[11px] font-semibold tabular-nums text-claude-dark">
-              {{ i + 1 }}
+        <section v-reveal="280" aria-label="Detalles de la capacitación" class="mt-10 rounded-3xl border border-neutral-200 bg-white p-6 text-left shadow-xl shadow-claude/10 sm:p-7">
+          <div class="flex items-start gap-4">
+            <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-claude text-white">
+              <ClaudeMark class="h-5 w-5" />
             </span>
-            {{ step }}
-          </li>
-        </ol>
+            <div>
+              <h2 class="text-lg font-semibold tracking-tight text-neutral-900">{{ claudeTraining.title }}</h2>
+              <p class="mt-1 text-sm text-neutral-600">
+                {{ claudeTraining.dateLabel }} · {{ claudeTraining.timeLabel }}
+                <span class="text-neutral-400">({{ claudeTraining.timeZoneLabel }})</span>
+              </p>
+              <p class="mt-0.5 text-sm text-neutral-600">En línea por Google Meet</p>
+            </div>
+          </div>
+
+          <a
+            :href="claudeTraining.meetUrl"
+            target="_blank"
+            rel="noopener"
+            class="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-claude px-4 py-3 text-sm font-semibold text-white transition hover:bg-claude-dark"
+          >
+            Unirse por Google Meet
+            <svg aria-hidden="true" viewBox="0 0 16 16" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 8h10M9 4l4 4-4 4" />
+            </svg>
+          </a>
+          <p class="mt-2 text-center text-xs text-neutral-400">{{ claudeTraining.meetUrl.replace('https://', '') }}</p>
+
+          <ClaudeAddToCalendar class="mt-6 border-t border-neutral-100 pt-6" />
+
+          <p class="mt-6 rounded-2xl bg-claude-ivory p-4 text-sm leading-relaxed text-neutral-600">
+            Si puede, cree antes una cuenta gratuita en
+            <a href="https://claude.ai" target="_blank" rel="noopener" class="font-medium text-claude-dark underline decoration-claude/40 underline-offset-4 hover:decoration-claude">claude.ai</a>
+            para seguir la demostración.
+          </p>
+        </section>
 
         <div v-reveal="360" class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <NuxtLink to="/claude" class="inline-flex items-center justify-center rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm font-semibold text-neutral-900 transition hover:border-neutral-400">
