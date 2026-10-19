@@ -14,9 +14,10 @@ type SheetConfig = {
   sheetRange: string
 }
 
+type SheetTarget = 'waitlist' | 'claudeTraining'
+
 type SheetRow = {
-  /** Tab name. When omitted, the first tab and `sheetRange` are used. */
-  tab?: string
+  target: SheetTarget
   headers: string[]
   email: string
   values: string[]
@@ -27,29 +28,41 @@ type SheetRow = {
 const SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
 const SHEETS_API = 'https://sheets.googleapis.com/v4/spreadsheets'
 const WAITLIST_HEADERS = ['Timestamp', 'Email', 'Name', 'Organization', 'Source']
-export const CLAUDE_TRAINING_TAB = 'Claude Training'
 const CLAUDE_TRAINING_HEADERS = ['Timestamp', 'Email', 'Source']
 
-function getSheetConfig(): SheetConfig {
+function getSheetConfig(target: SheetTarget): SheetConfig {
   const config = useRuntimeConfig()
-
-  return {
-    sheetId: String(config.googleSheetId || ''),
+  const credentials = {
     clientEmail: String(config.googleClientEmail || ''),
     privateKey: String(config.googlePrivateKey || '').replace(/\\n/g, '\n'),
+  }
+
+  if (target === 'claudeTraining') {
+    return {
+      ...credentials,
+      sheetId: String(config.claudeSheetId || ''),
+      appsScriptUrl: String(config.claudeAppsScriptUrl || ''),
+      sheetRange: 'A:C',
+    }
+  }
+
+  return {
+    ...credentials,
+    sheetId: String(config.googleSheetId || ''),
     appsScriptUrl: String(config.googleAppsScriptUrl || ''),
     sheetRange: String(config.googleSheetRange || 'A:E'),
   }
 }
 
-export function isSheetsConfigured(): boolean {
-  const config = getSheetConfig()
+export function isSheetsConfigured(target: SheetTarget = 'waitlist'): boolean {
+  const config = getSheetConfig(target)
   return Boolean(config.appsScriptUrl)
     || Boolean(config.clientEmail && config.privateKey && config.sheetId)
 }
 
 export async function appendWaitlistEntry(entry: WaitlistEntry): Promise<void> {
   const { duplicate } = await appendRow({
+    target: 'waitlist',
     headers: WAITLIST_HEADERS,
     email: entry.email,
     values: [entry.email, entry.name, entry.organization, 'website'],
@@ -66,16 +79,16 @@ export async function appendWaitlistEntry(entry: WaitlistEntry): Promise<void> {
 
 export async function appendClaudeTrainingEntry(email: string): Promise<{ duplicate: boolean }> {
   return await appendRow({
-    tab: CLAUDE_TRAINING_TAB,
+    target: 'claudeTraining',
     headers: CLAUDE_TRAINING_HEADERS,
     email,
     values: [email, 'claude-training'],
-    payload: { email, sheet: CLAUDE_TRAINING_TAB },
+    payload: { email },
   })
 }
 
 async function appendRow(row: SheetRow): Promise<{ duplicate: boolean }> {
-  const config = getSheetConfig()
+  const config = getSheetConfig(row.target)
 
   if (config.appsScriptUrl) {
     return await appendViaAppsScript(config.appsScriptUrl, row)
@@ -164,31 +177,10 @@ async function sheetsRequest<T>(
   return await response.json() as T
 }
 
-async function ensureTab(token: string, sheetId: string, tab: string): Promise<void> {
-  const spreadsheet = await sheetsRequest<{ sheets?: { properties?: { title?: string } }[] }>(
-    token,
-    `${sheetId}?fields=sheets.properties.title`,
-  )
-
-  if (spreadsheet.sheets?.some(sheet => sheet.properties?.title === tab)) {
-    return
-  }
-
-  await sheetsRequest(token, `${sheetId}:batchUpdate`, {
-    method: 'POST',
-    body: JSON.stringify({ requests: [{ addSheet: { properties: { title: tab } } }] }),
-  })
-}
-
 async function appendViaSheetsApi(config: SheetConfig, row: SheetRow): Promise<{ duplicate: boolean }> {
   const token = await getAccessToken(config.clientEmail, config.privateKey)
 
-  if (row.tab) {
-    await ensureTab(token, config.sheetId, row.tab)
-  }
-
-  const range = row.tab ? `'${row.tab}'!A:${String.fromCharCode(64 + row.headers.length)}` : config.sheetRange
-  const encodedRange = encodeURIComponent(range)
+  const encodedRange = encodeURIComponent(config.sheetRange)
   const existing = await sheetsRequest<{ values?: string[][] }>(
     token,
     `${config.sheetId}/values/${encodedRange}`,

@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (!isSheetsConfigured()) {
+  if (!isSheetsConfigured('claudeTraining')) {
     throw createError({
       statusCode: 503,
       statusMessage: 'Las inscripciones aún no están conectadas a la hoja de cálculo.',

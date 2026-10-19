@@ -14,6 +14,8 @@ export default defineNuxtConfig({
     googlePrivateKey: '',
     googleAppsScriptUrl: '',
     googleSheetRange: 'A:E',
+    claudeSheetId: '17cuqf_ER5ZL_wrS-6WsJVLwXmqJ3no9cUSFDov1wLuM',
+    claudeAppsScriptUrl: '',
   },
   routeRules: {
     '/dev-sw.js': {

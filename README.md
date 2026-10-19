@@ -41,11 +41,17 @@ NUXT_GOOGLE_APPS_SCRIPT_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_I
 
 The first signup writes a header row: Timestamp, Email, Name, Organization, Source.
 
-If you already deployed an earlier version of the script, paste the new code and use **Deploy → Manage deployments → Edit → New version** so the URL stays the same.
-
 ## Free Claude training
 
-The landing page links to `/claude`, a page describing the free 45-minute Claude training. Visitors sign up with their email and are taken to `/claude/confirmacion`. Signups are saved to a **Claude Training** tab in the same spreadsheet (created automatically) with the columns Timestamp, Email, Source. Emails to attendees are sent manually from that tab.
+The landing page links to `/claude`, a page describing the free 45-minute Claude training. Visitors sign up with their email and are taken to `/claude/confirmacion`. Signups are saved to the first tab of [a separate spreadsheet](https://docs.google.com/spreadsheets/d/17cuqf_ER5ZL_wrS-6WsJVLwXmqJ3no9cUSFDov1wLuM/edit?gid=0#gid=0) with the columns Timestamp, Email, Source. Emails to attendees are sent manually from that sheet.
+
+To connect it, repeat Option 1 above in **that** spreadsheet, using `scripts/claude-training-apps-script.js`, and put the web app URL in `.env`:
+
+```bash
+NUXT_CLAUDE_APPS_SCRIPT_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec
+```
+
+If you use a service account instead, share this spreadsheet with it as **Editor** too. `NUXT_CLAUDE_SHEET_ID` is already set to this spreadsheet.
 
 ### Option 2 — Google Cloud service account
 
