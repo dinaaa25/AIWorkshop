@@ -41,6 +41,12 @@ NUXT_GOOGLE_APPS_SCRIPT_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_I
 
 The first signup writes a header row: Timestamp, Email, Name, Organization, Source.
 
+If you already deployed an earlier version of the script, paste the new code and use **Deploy → Manage deployments → Edit → New version** so the URL stays the same.
+
+## Free Claude training
+
+The landing page links to `/claude`, a page describing the free 45-minute Claude training. Visitors sign up with their email and are taken to `/claude/confirmacion`. Signups are saved to a **Claude Training** tab in the same spreadsheet (created automatically) with the columns Timestamp, Email, Source. Emails to attendees are sent manually from that tab.
+
 ### Option 2 — Google Cloud service account
 
 1. In Google Cloud, create a project (or use an existing one) and enable the **Google Sheets API**.

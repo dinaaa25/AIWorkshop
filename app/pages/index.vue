@@ -65,6 +65,8 @@ const markDelay = (index: number) => ({ transitionDelay: `${150 + index * 50}ms`
       </div>
     </header>
 
+    <ClaudeTrainingBanner />
+
     <section class="relative overflow-hidden">
       <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
         <div class="absolute -top-40 left-1/2 h-[440px] w-[440px] -translate-x-1/2 rounded-full bg-gradient-to-br from-indigo-100 via-neutral-100 to-transparent opacity-70 blur-3xl" />

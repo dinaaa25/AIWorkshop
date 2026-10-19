@@ -2,6 +2,16 @@
 
 @theme {
   --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --color-claude: #d97757;
+  --color-claude-dark: #c15f3c;
+  --color-claude-ivory: #faf9f5;
+  --animate-claude-spin: claude-spin 24s linear infinite;
+}
+
+@keyframes claude-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Initial state for children of a [data-reveal] element that has not scrolled into view yet. */

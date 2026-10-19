@@ -14,9 +14,21 @@ type SheetConfig = {
   sheetRange: string
 }
 
+type SheetRow = {
+  /** Tab name. When omitted, the first tab and `sheetRange` are used. */
+  tab?: string
+  headers: string[]
+  email: string
+  values: string[]
+  /** Body sent to the Apps Script web app. */
+  payload: Record<string, string>
+}
+
 const SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
 const SHEETS_API = 'https://sheets.googleapis.com/v4/spreadsheets'
-const HEADERS = ['Timestamp', 'Email', 'Name', 'Organization', 'Source']
+const WAITLIST_HEADERS = ['Timestamp', 'Email', 'Name', 'Organization', 'Source']
+export const CLAUDE_TRAINING_TAB = 'Claude Training'
+const CLAUDE_TRAINING_HEADERS = ['Timestamp', 'Email', 'Source']
 
 function getSheetConfig(): SheetConfig {
   const config = useRuntimeConfig()
@@ -37,28 +49,53 @@ export function isSheetsConfigured(): boolean {
 }
 
 export async function appendWaitlistEntry(entry: WaitlistEntry): Promise<void> {
+  const { duplicate } = await appendRow({
+    headers: WAITLIST_HEADERS,
+    email: entry.email,
+    values: [entry.email, entry.name, entry.organization, 'website'],
+    payload: entry,
+  })
+
+  if (duplicate) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Este correo ya está en la lista de espera.',
+    })
+  }
+}
+
+export async function appendClaudeTrainingEntry(email: string): Promise<{ duplicate: boolean }> {
+  return await appendRow({
+    tab: CLAUDE_TRAINING_TAB,
+    headers: CLAUDE_TRAINING_HEADERS,
+    email,
+    values: [email, 'claude-training'],
+    payload: { email, sheet: CLAUDE_TRAINING_TAB },
+  })
+}
+
+async function appendRow(row: SheetRow): Promise<{ duplicate: boolean }> {
   const config = getSheetConfig()
 
   if (config.appsScriptUrl) {
-    await appendViaAppsScript(config.appsScriptUrl, entry)
-    return
+    return await appendViaAppsScript(config.appsScriptUrl, row)
   }
 
   if (!config.clientEmail || !config.privateKey || !config.sheetId) {
     throw createError({
       statusCode: 503,
-      statusMessage: 'La lista de espera aún no está conectada a la hoja de cálculo.',
+      statusMessage: 'El formulario aún no está conectado a la hoja de cálculo.',
     })
   }
 
-  await appendViaSheetsApi(config, entry)
+  return await appendViaSheetsApi(config, row)
 }
 
-async function appendViaAppsScript(url: string, entry: WaitlistEntry): Promise<void> {
+async function appendViaAppsScript(url: string, row: SheetRow): Promise<{ duplicate: boolean }> {
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(entry),
+    body: JSON.stringify(row.payload),
     redirect: 'follow',
   })
 
@@ -72,10 +109,7 @@ async function appendViaAppsScript(url: string, entry: WaitlistEntry): Promise<v
   const payload = await response.json().catch(() => ({})) as { ok?: boolean, duplicate?: boolean, error?: string }
 
   if (payload.duplicate) {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'Este correo ya está en la lista de espera.',
-    })
+    return { duplicate: true }
   }
 
   if (payload.ok === false) {
@@ -84,6 +118,8 @@ async function appendViaAppsScript(url: string, entry: WaitlistEntry): Promise<v
       statusMessage: payload.error || 'No se pudo actualizar la hoja de cálculo.',
     })
   }
+
+  return { duplicate: false }
 }
 
 async function getAccessToken(email: string, key: string): Promise<string> {
@@ -128,56 +164,63 @@ async function sheetsRequest<T>(
   return await response.json() as T
 }
 
-async function appendViaSheetsApi(config: SheetConfig, entry: WaitlistEntry): Promise<void> {
+async function ensureTab(token: string, sheetId: string, tab: string): Promise<void> {
+  const spreadsheet = await sheetsRequest<{ sheets?: { properties?: { title?: string } }[] }>(
+    token,
+    `${sheetId}?fields=sheets.properties.title`,
+  )
+
+  if (spreadsheet.sheets?.some(sheet => sheet.properties?.title === tab)) {
+    return
+  }
+
+  await sheetsRequest(token, `${sheetId}:batchUpdate`, {
+    method: 'POST',
+    body: JSON.stringify({ requests: [{ addSheet: { properties: { title: tab } } }] }),
+  })
+}
+
+async function appendViaSheetsApi(config: SheetConfig, row: SheetRow): Promise<{ duplicate: boolean }> {
   const token = await getAccessToken(config.clientEmail, config.privateKey)
-  const encodedRange = encodeURIComponent(config.sheetRange)
+
+  if (row.tab) {
+    await ensureTab(token, config.sheetId, row.tab)
+  }
+
+  const range = row.tab ? `'${row.tab}'!A:${String.fromCharCode(64 + row.headers.length)}` : config.sheetRange
+  const encodedRange = encodeURIComponent(range)
   const existing = await sheetsRequest<{ values?: string[][] }>(
     token,
     `${config.sheetId}/values/${encodedRange}`,
   )
 
   const rows = existing.values || []
-  const hasHeader = rows[0]?.[0] === HEADERS[0]
+  const hasHeader = rows[0]?.[0] === row.headers[0]
   const emailColumn = hasHeader ? 1 : 0
-  const alreadyListed = rows.some((row, index) => {
+  const alreadyListed = rows.some((existingRow, index) => {
     if (hasHeader && index === 0) {
       return false
     }
-    return String(row[emailColumn] || '').trim().toLowerCase() === entry.email
+    return String(existingRow[emailColumn] || '').trim().toLowerCase() === row.email
   })
 
   if (alreadyListed) {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'Este correo ya está en la lista de espera.',
+    return { duplicate: true }
+  }
+
+  const appendPath = `${config.sheetId}/values/${encodedRange}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`
+
+  if (rows.length === 0) {
+    await sheetsRequest(token, appendPath, {
+      method: 'POST',
+      body: JSON.stringify({ values: [row.headers] }),
     })
   }
 
-  if (rows.length === 0) {
-    await sheetsRequest(
-      token,
-      `${config.sheetId}/values/${encodedRange}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
-      {
-        method: 'POST',
-        body: JSON.stringify({ values: [HEADERS] }),
-      },
-    )
-  }
+  await sheetsRequest(token, appendPath, {
+    method: 'POST',
+    body: JSON.stringify({ values: [[new Date().toISOString(), ...row.values]] }),
+  })
 
-  await sheetsRequest(
-    token,
-    `${config.sheetId}/values/${encodedRange}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        values: [[
-          new Date().toISOString(),
-          entry.email,
-          entry.name,
-          entry.organization,
-          'website',
-        ]],
-      }),
-    },
-  )
+  return { duplicate: false }
 }
