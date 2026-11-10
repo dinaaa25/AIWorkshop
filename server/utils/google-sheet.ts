@@ -21,6 +21,8 @@ type SheetRow = {
   headers: string[]
   email: string
   values: string[]
+  /** When set, the same email can sign up again for a different event. */
+  event?: string
   /** Body sent to the Apps Script web app. */
   payload: Record<string, string>
 }
@@ -28,7 +30,7 @@ type SheetRow = {
 const SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
 const SHEETS_API = 'https://sheets.googleapis.com/v4/spreadsheets'
 const WAITLIST_HEADERS = ['Timestamp', 'Email', 'Name', 'Organization', 'Source']
-const CLAUDE_TRAINING_HEADERS = ['Timestamp', 'Email', 'Source']
+const TRAINING_HEADERS = ['Timestamp', 'Email', 'Source', 'Event']
 
 function getSheetConfig(target: SheetTarget): SheetConfig {
   const config = useRuntimeConfig()
@@ -42,7 +44,7 @@ function getSheetConfig(target: SheetTarget): SheetConfig {
       ...credentials,
       sheetId: String(config.claudeSheetId || ''),
       appsScriptUrl: String(config.claudeAppsScriptUrl || ''),
-      sheetRange: 'A:C',
+      sheetRange: 'A:D',
     }
   }
 
@@ -78,12 +80,21 @@ export async function appendWaitlistEntry(entry: WaitlistEntry): Promise<void> {
 }
 
 export async function appendClaudeTrainingEntry(email: string): Promise<{ duplicate: boolean }> {
-  return await appendRow({
+  return await appendTrainingEntry(email, 'claude-training', 'Claude')
+}
+
+export async function appendAgentesTrainingEntry(email: string): Promise<{ duplicate: boolean }> {
+  return await appendTrainingEntry(email, 'agentes-training', 'Agentes')
+}
+
+function appendTrainingEntry(email: string, source: string, event: string): Promise<{ duplicate: boolean }> {
+  return appendRow({
     target: 'claudeTraining',
-    headers: CLAUDE_TRAINING_HEADERS,
+    headers: TRAINING_HEADERS,
     email,
-    values: [email, 'claude-training'],
-    payload: { email },
+    event,
+    values: [email, source, event],
+    payload: { email, event },
   })
 }
 
@@ -208,7 +219,8 @@ async function appendViaSheetsApi(config: SheetConfig, row: SheetRow): Promise<{
     if (hasHeader && index === 0) {
       return false
     }
-    return String(existingRow[emailColumn] || '').trim().toLowerCase() === row.email
+    const sameEmail = String(existingRow[emailColumn] || '').trim().toLowerCase() === row.email
+    return sameEmail && matchesEvent(existingRow, row, hasHeader)
   })
 
   if (alreadyListed) {
@@ -230,4 +242,27 @@ async function appendViaSheetsApi(config: SheetConfig, row: SheetRow): Promise<{
   })
 
   return { duplicate: false }
+}
+
+/** A training signup is a duplicate only when the email already has that same event. */
+function matchesEvent(existingRow: string[], row: SheetRow, hasHeader: boolean): boolean {
+  if (!row.event) {
+    return true
+  }
+
+  const eventIndex = hasHeader ? row.headers.indexOf('Event') : -1
+  const sourceIndex = hasHeader ? row.headers.indexOf('Source') : -1
+  const recorded = String(eventIndex >= 0 ? existingRow[eventIndex] : '').trim()
+  if (recorded) {
+    return recorded === row.event
+  }
+
+  const source = String(sourceIndex >= 0 ? existingRow[sourceIndex] : '').trim().toLowerCase()
+  if (source.includes('agente')) {
+    return row.event === 'Agentes'
+  }
+  if (source) {
+    return row.event === 'Claude'
+  }
+  return false
 }

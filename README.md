@@ -43,7 +43,7 @@ The first signup writes a header row: Timestamp, Email, Name, Organization, Sour
 
 ## Free Claude training
 
-The landing page links to `/claude`, a page describing the free 45-minute Claude training. Visitors sign up with their email and are taken to `/claude/confirmacion`, which shows the Google Meet link and buttons to add the session to Google Calendar, Outlook, or Apple Calendar (an `.ics` file served from `/capacitacion-claude.ics`). Signups are also saved to the first tab of [a separate spreadsheet](https://docs.google.com/spreadsheets/d/17cuqf_ER5ZL_wrS-6WsJVLwXmqJ3no9cUSFDov1wLuM/edit?gid=0#gid=0) with the columns Timestamp, Email, Source, for record keeping.
+The landing page links to `/claude`, a page describing the free 45-minute Claude training. Visitors sign up with their email and are taken to `/claude/confirmacion`, which shows the Google Meet link and buttons to add the session to Google Calendar, Outlook, or Apple Calendar (an `.ics` file served from `/capacitacion-claude.ics`). Signups for this session and for the Agentes session are saved to the first tab of [the same spreadsheet](https://docs.google.com/spreadsheets/d/17cuqf_ER5ZL_wrS-6WsJVLwXmqJ3no9cUSFDov1wLuM/edit?gid=0#gid=0). Columns are Timestamp, Email, Source, and Event (`Claude` or `Agentes`). The same email can register for both. After changing `scripts/claude-training-apps-script.js`, deploy a new version of the existing web app so the URL stays the same.
 
 The date, time, and Meet link live in `shared/utils/claude-training.ts`.
 

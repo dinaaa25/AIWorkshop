@@ -66,6 +66,7 @@ const markDelay = (index: number) => ({ transitionDelay: `${150 + index * 50}ms`
     </header>
 
     <ClaudeTrainingBanner />
+    <AgentesTrainingBanner />
 
     <section class="relative overflow-hidden">
       <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">

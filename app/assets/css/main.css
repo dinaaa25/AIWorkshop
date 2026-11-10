@@ -5,6 +5,9 @@
   --color-claude: #d97757;
   --color-claude-dark: #c15f3c;
   --color-claude-ivory: #faf9f5;
+  --color-grok: #171717;
+  --color-grok-dark: #000000;
+  --color-grok-paper: #f5f5f5;
   --animate-claude-spin: claude-spin 24s linear infinite;
 }
 

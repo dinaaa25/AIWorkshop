@@ -38,7 +38,7 @@ const signup = useState<{ email: string, duplicate: boolean } | null>('claude-si
         </div>
 
         <h1 v-reveal="120" class="mt-6 text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl">
-          {{ signup?.duplicate ? 'Ya estaba inscrito.' : '¡Listo, ya está inscrito!' }}
+          {{ signup?.duplicate ? 'Ya estaba inscrito en esta capacitación.' : '¡Listo, ya está inscrito!' }}
         </h1>
         <p v-reveal="200" class="mt-4 text-base leading-relaxed text-neutral-600">
           Guardamos su lugar<template v-if="signup?.email"> con el correo <strong class="font-semibold text-neutral-900">{{ signup.email }}</strong></template>.
