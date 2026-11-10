@@ -16,6 +16,11 @@ export default defineNuxtConfig({
     googleSheetRange: 'A:E',
     claudeSheetId: '17cuqf_ER5ZL_wrS-6WsJVLwXmqJ3no9cUSFDov1wLuM',
     claudeAppsScriptUrl: '',
+    public: {
+      posthogPublicKey: 'phc_BsuMfyGxsBhDndFYyQNqoRzh5c9FzByrWxS6ZZ7mfTTN',
+      posthogHost: 'https://us.i.posthog.com',
+      posthogDefaults: '2026-08-30',
+    },
   },
   routeRules: {
     '/dev-sw.js': {
