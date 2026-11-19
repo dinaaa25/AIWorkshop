@@ -16,6 +16,8 @@ export default defineNuxtConfig({
     googleSheetRange: 'A:E',
     claudeSheetId: '17cuqf_ER5ZL_wrS-6WsJVLwXmqJ3no9cUSFDov1wLuM',
     claudeAppsScriptUrl: '',
+    serviciosSheetId: '',
+    serviciosAppsScriptUrl: '',
     public: {
       posthogPublicKey: 'phc_BsuMfyGxsBhDndFYyQNqoRzh5c9FzByrWxS6ZZ7mfTTN',
       posthogHost: 'https://us.i.posthog.com',
@@ -59,12 +61,12 @@ export default defineNuxtConfig({
         { property: 'og:type', content: 'website' },
       ],
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg', key: 'icon' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
+          href: 'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap',
         },
       ],
     },

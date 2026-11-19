@@ -14,7 +14,14 @@ type SheetConfig = {
   sheetRange: string
 }
 
-type SheetTarget = 'waitlist' | 'claudeTraining'
+type SheetTarget = 'waitlist' | 'claudeTraining' | 'servicios'
+
+export type ServiciosLead = {
+  email: string
+  name: string
+  organization: string
+  proceso: string
+}
 
 type SheetRow = {
   target: SheetTarget
@@ -23,6 +30,8 @@ type SheetRow = {
   values: string[]
   /** When set, the same email can sign up again for a different event. */
   event?: string
+  /** When true, repeat submissions from the same email are always appended. */
+  allowRepeat?: boolean
   /** Body sent to the Apps Script web app. */
   payload: Record<string, string>
 }
@@ -31,12 +40,22 @@ const SHEETS_SCOPE = 'https://www.googleapis.com/auth/spreadsheets'
 const SHEETS_API = 'https://sheets.googleapis.com/v4/spreadsheets'
 const WAITLIST_HEADERS = ['Timestamp', 'Email', 'Name', 'Organization', 'Source']
 const TRAINING_HEADERS = ['Timestamp', 'Email', 'Source', 'Event']
+const SERVICIOS_HEADERS = ['Timestamp', 'Email', 'Name', 'Organization', 'Proceso', 'Source']
 
 function getSheetConfig(target: SheetTarget): SheetConfig {
   const config = useRuntimeConfig()
   const credentials = {
     clientEmail: String(config.googleClientEmail || ''),
     privateKey: String(config.googlePrivateKey || '').replace(/\\n/g, '\n'),
+  }
+
+  if (target === 'servicios') {
+    return {
+      ...credentials,
+      sheetId: String(config.serviciosSheetId || ''),
+      appsScriptUrl: String(config.serviciosAppsScriptUrl || ''),
+      sheetRange: 'A:F',
+    }
   }
 
   if (target === 'claudeTraining') {
@@ -77,6 +96,17 @@ export async function appendWaitlistEntry(entry: WaitlistEntry): Promise<void> {
       statusMessage: 'Este correo ya está en la lista de espera.',
     })
   }
+}
+
+export async function appendServiciosLead(lead: ServiciosLead): Promise<void> {
+  await appendRow({
+    target: 'servicios',
+    headers: SERVICIOS_HEADERS,
+    email: lead.email,
+    values: [lead.email, lead.name, lead.organization, lead.proceso, 'servicios'],
+    payload: { ...lead, source: 'servicios' },
+    allowRepeat: true,
+  })
 }
 
 export async function appendClaudeTrainingEntry(email: string): Promise<{ duplicate: boolean }> {
@@ -215,7 +245,7 @@ async function appendViaSheetsApi(config: SheetConfig, row: SheetRow): Promise<{
   const rows = existing.values || []
   const hasHeader = rows[0]?.[0] === row.headers[0]
   const emailColumn = hasHeader ? 1 : 0
-  const alreadyListed = rows.some((existingRow, index) => {
+  const alreadyListed = !row.allowRepeat && rows.some((existingRow, index) => {
     if (hasHeader && index === 0) {
       return false
     }

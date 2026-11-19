@@ -8,7 +8,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "pdf:servicios": "bash scripts/export-servicios-pdf.sh"
   },
   "dependencies": {
     "google-auth-library": "^11.0.2",

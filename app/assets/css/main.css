@@ -1,7 +1,12 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Outfit','Helvetica Neue', Arial, sans-serif;
+  /* Business Context AI primary: Boston Blue */
+  --color-primary: #3b8bc2;
+  --color-primary-dark: #2e6f9c;
+  --color-primary-soft: #ebf4fa;
+  --color-primary-ink: #1d4767;
   --color-claude: #d97757;
   --color-claude-dark: #c15f3c;
   --color-claude-ivory: #faf9f5;
