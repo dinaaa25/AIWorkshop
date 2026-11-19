@@ -3,7 +3,7 @@ export const agentesTraining = {
   description:
     'Capacitación gratuita de 45 minutos sobre agentes: qué es la IA agéntica, cómo se hacen, Grok Bot, equipos de agentes, ventas, finanzas y skills.',
   /** Paste the Google Meet link here when it is ready. */
-  meetUrl: '',
+  meetUrl: 'https://meet.google.com/cef-yyxo-mey',
   /** Thursday 19 November 2026, 18:30–19:15 America/Guatemala (UTC−6, no daylight saving). */
   startUtc: '2026-11-20T00:30:00Z',
   endUtc: '2026-11-20T01:15:00Z',
