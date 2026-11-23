@@ -1,4 +1,4 @@
-// Business Context AI · solicitudes de diagnóstico desde /servicios
+// Business Context AI · solicitudes de diagnóstico (home) y leads calificados de los cursos
 // Paste into Extensions → Apps Script of the leads spreadsheet, deploy as a web app
 // (execute as: me, access: anyone) and set NUXT_SERVICIOS_APPS_SCRIPT_URL to its URL.
 
@@ -15,6 +15,8 @@ function doPost(e) {
     const name = String(data.name || '').trim()
     const organization = String(data.organization || '').trim()
     const proceso = String(data.proceso || '').trim()
+    // 'servicios' from the home contact form, 'curso:<session-id>' from a course confirmation page.
+    const source = String(data.source || 'servicios').trim().slice(0, 80)
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return json_({ ok: false, error: 'Invalid email' })
@@ -27,7 +29,7 @@ function doPost(e) {
     }
 
     // Repeat requests are allowed: a client may ask about a second process.
-    sheet.appendRow([new Date(), email, name, organization, proceso, 'servicios'])
+    sheet.appendRow([new Date(), email, name, organization, proceso, source])
     return json_({ ok: true })
   } catch (error) {
     return json_({ ok: false, error: String(error) })

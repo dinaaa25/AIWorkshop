@@ -1,13 +1,13 @@
 /**
  * Business Context AI · services content.
- * Single source for the /servicios page and the /servicios/pdf one-pager, so the two never drift apart.
+ * Single source for the home page (/) and the /servicios/pdf one-pager, so the two never drift apart.
  */
 
 export const BRAND = {
   name: 'Business Context AI',
   email: 'mark@businesscontext.ai',
   site: 'businesscontext.ai',
-  pageUrl: 'https://businesscontext.ai/servicios',
+  pageUrl: 'https://businesscontext.ai',
   pdfPath: '/business-context-ai-servicios.pdf',
 }
 
@@ -26,6 +26,21 @@ export const HERO = {
   title: 'Recupere las horas que su equipo pierde en procesos repetitivos.',
   lead: `Usted nos explica el proceso que más tiempo le quita a su equipo. En ${OFFER.diagnosticoDias} días hábiles lo mapeamos y le mostramos exactamente qué pasos puede eliminar la IA y cuánto tiempo le ahorraría. Después lo implementamos y lo dejamos funcionando, con su equipo ya capacitado.`,
   cta: 'Solicitar mi diagnóstico',
+  freeCta: 'Empiece gratis: próxima capacitación',
+}
+
+/**
+ * Social proof. Everything here is optional: the proof strip only shows what is filled in.
+ * Only put real numbers and quotes (with permission) here.
+ */
+export const PROOF = {
+  /** Total people who attended the free courses, e.g. 85 */
+  personasCapacitadas: null as number | null,
+  /** Companies represented, e.g. 30 */
+  empresas: null as number | null,
+  /** Industries of attendees and clients, e.g. ['Agroexportación', 'Legal', 'Distribución'] */
+  industrias: [] as string[],
+  testimonios: [] as { quote: string, name: string, role: string }[],
 }
 
 export const BEFORE_AFTER = {
@@ -207,8 +222,11 @@ export const GUARANTEE = {
 }
 
 export const TRAINING = {
-  eyebrow: 'Capacitación aplicada',
-  title: 'No es un curso genérico de IA. Es su empresa, su industria y sus herramientas.',
+  eyebrow: 'Capacitaciones',
+  title: 'Empiece gratis. Cuando quiera, lo llevamos a su empresa.',
+  freeTitle: 'Gratis y en línea, para cualquiera',
+  freeLead: 'Una hora, cada pocas semanas, alternando Claude y agentes de IA con Grok Bot. Es la mejor forma de conocernos antes de contratar algo.',
+  companyTitle: 'A la medida, para su equipo',
   lead: 'Diseñamos cada capacitación con los procesos, documentos y sistemas de su empresa. Su equipo practica con su propio trabajo, no con ejemplos de otras industrias, y se lleva instrucciones y flujos que puede usar al día siguiente.',
   points: [
     { title: 'Conectada a sus herramientas', text: 'Su sistema contable, Office o Google, WhatsApp, y el asistente de IA que ya usa su empresa.' },
@@ -218,6 +236,10 @@ export const TRAINING = {
 }
 
 export const FAQ = [
+  {
+    q: '¿Las capacitaciones gratuitas son realmente gratis?',
+    a: 'Sí. Duran una hora, son en línea y no tienen costo ni compromiso. Las damos porque es la mejor forma de que nos conozca. Si después quiere automatizar un proceso, el siguiente paso es el diagnóstico.',
+  },
   {
     q: '¿Qué pasa con la confidencialidad de mis datos?',
     a: 'Trabajamos con cuentas empresariales que no usan sus datos para entrenar modelos, damos acceso solo a lo necesario y firmamos un acuerdo de confidencialidad antes de ver cualquier información.',

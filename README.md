@@ -1,6 +1,6 @@
-# AI Executive Workshop waiting list
+# Business Context AI
 
-A Nuxt 4, Vue 3, and TypeScript site for the Guatemala AI Executive Workshop. Visitors join a waiting list with their email; each signup is written to [this Google Sheet](https://docs.google.com/spreadsheets/d/1B3UhsQG6u5M-euundej28Yia2fR5Mjt0err5fg1vXsw/edit?gid=0#gid=0).
+A Nuxt 4, Vue 3, and TypeScript site for Business Context AI: services, free rotating courses, and the Guatemala AI Executive Workshop. On the workshop page, visitors can join a waiting list with their email. Each signup is written to [this Google Sheet](https://docs.google.com/spreadsheets/d/1B3UhsQG6u5M-euundej28Yia2fR5Mjt0err5fg1vXsw/edit?gid=0#gid=0).
 
 Date and time are presented as to be announced. Confirmed details can be sent later to the addresses on the list.
 
@@ -41,13 +41,28 @@ NUXT_GOOGLE_APPS_SCRIPT_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_I
 
 The first signup writes a header row: Timestamp, Email, Name, Organization, Source.
 
-## Free Claude training
+## Site structure
 
-The landing page links to `/claude`, a page describing the free 45-minute Claude training. Visitors sign up with their email and are taken to `/claude/confirmacion`, which shows the Google Meet link and buttons to add the session to Google Calendar, Outlook, or Apple Calendar (an `.ics` file served from `/capacitacion-claude.ics`). Signups for this session and for the Agentes session are saved to the first tab of [the same spreadsheet](https://docs.google.com/spreadsheets/d/17cuqf_ER5ZL_wrS-6WsJVLwXmqJ3no9cUSFDov1wLuM/edit?gid=0#gid=0). Columns are Timestamp, Email, Source, and Event (`Claude` or `Agentes`). The same email can register for both. After changing `scripts/claude-training-apps-script.js`, deploy a new version of the existing web app so the URL stays the same.
+- `/` Business Context AI: services, diagnostic offer and contact form (content in `shared/utils/servicios.ts`).
+- `/cursos` free courses hub; `/cursos/claude` and `/cursos/agentes` course pages; `/cursos/confirmacion?s=<session-id>` after signup.
+- `/taller` the $799 Taller Ejecutivo.
+- Old links `/servicios`, `/claude`, `/agentes` redirect (see `routeRules` in `nuxt.config.ts`).
 
-The date, time, and Meet link live in `shared/utils/claude-training.ts`.
+## Free courses (rotating Claude / Agentes)
 
-To connect it, repeat Option 1 above in **that** spreadsheet, using `scripts/claude-training-apps-script.js`, and put the web app URL in `.env`:
+**To schedule the next session, add one entry to `SESSIONS` in `shared/utils/courses.ts`** (id, course, UTC start/end, Meet link, labels). The site always features the next session that has not ended; past ones show as "realizada". With no upcoming date, a course page shows an "Avíseme" form.
+
+Signups (email only) go to the first tab of [the training spreadsheet](https://docs.google.com/spreadsheets/d/17cuqf_ER5ZL_wrS-6WsJVLwXmqJ3no9cUSFDov1wLuM/edit?gid=0#gid=0): Timestamp, Email, Source, Event. Event is the session id (e.g. `claude-2026-12-03`) or `<course>-waitlist`; older rows say `Claude`/`Agentes`. The same email can sign up for every session.
+
+The confirmation page has an optional form (name, company, process). Those go to the servicios leads sheet with Source `curso:<session-id>`. The home contact form uses Source `servicios`.
+
+Calendar files: `/calendario/<session-id>.ics`.
+
+After changing `scripts/claude-training-apps-script.js` or `scripts/servicios-apps-script.js`, deploy a **new version of the existing web app** so the URL stays the same.
+
+PostHog events: `course_signup`, `course_qualified`, `diagnostic_request`.
+
+To connect the training sheet, repeat Option 1 above in **that** spreadsheet, using `scripts/claude-training-apps-script.js`, and put the web app URL in `.env`:
 
 ```bash
 NUXT_CLAUDE_APPS_SCRIPT_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec

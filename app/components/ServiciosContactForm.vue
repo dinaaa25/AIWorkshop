@@ -27,11 +27,13 @@ async function submit() {
         email: email.value,
         organization: organization.value,
         proceso: proceso.value,
+        source: 'servicios',
         website: website.value,
       },
     })
 
     status.value = 'success'
+    track('diagnostic_request', { source: 'servicios', has_process: Boolean(proceso.value.trim()) })
     name.value = ''
     email.value = ''
     organization.value = ''

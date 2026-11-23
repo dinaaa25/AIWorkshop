@@ -1,13 +1,13 @@
-type ClaudeTrainingBody = {
+type LegacyBody = {
   email?: string
   website?: string
 }
 
+/** Kept for pages cached before the /cursos move: signs up for the next claude session (or its waitlist). */
 export default defineEventHandler(async (event) => {
-  const ip = getClientIp(event)
-  assertRateLimit(ip)
+  assertRateLimit(getClientIp(event))
 
-  const body = await readBody<ClaudeTrainingBody>(event).catch(() => ({} as ClaudeTrainingBody))
+  const body = await readBody<LegacyBody>(event).catch(() => ({} as LegacyBody))
 
   if (body.website) {
     return { ok: true, duplicate: false }
@@ -16,10 +16,7 @@ export default defineEventHandler(async (event) => {
   const email = clean(body.email, 160).toLowerCase()
 
   if (!EMAIL_PATTERN.test(email)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Ingrese un correo válido.',
-    })
+    throw createError({ statusCode: 400, statusMessage: 'Ingrese un correo válido.' })
   }
 
   if (!isSheetsConfigured('claudeTraining')) {
@@ -29,7 +26,8 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const { duplicate } = await appendClaudeTrainingEntry(email)
+  const sessionId = nextSession('claude')?.id ?? waitlistId('claude')
+  const { duplicate } = await appendCourseEntry(email, sessionId)
 
-  return { ok: true, duplicate }
+  return { ok: true, duplicate, sessionId }
 })

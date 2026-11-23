@@ -1,9 +1,16 @@
+/** Legacy calendar link: always serves the next (or most recent) claude session. */
 export default defineEventHandler((event) => {
+  const session = nextSession('claude') ?? pastSessions('claude')[0]
+
+  if (!session) {
+    throw createError({ statusCode: 404, statusMessage: 'Sin fechas programadas.' })
+  }
+
   setResponseHeaders(event, {
     'Content-Type': 'text/calendar; charset=utf-8',
-    'Content-Disposition': 'attachment; filename="capacitacion-claude.ics"',
+    'Content-Disposition': `attachment; filename="${session.id}.ics"`,
     'Cache-Control': 'public, max-age=300',
   })
 
-  return claudeTrainingIcs()
+  return sessionIcs(session)
 })

@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+/* Course themes keep their class names in shared/utils/courses.ts */
+@source '../../../shared';
 
 @theme {
   --font-sans: 'Outfit','Helvetica Neue', Arial, sans-serif;

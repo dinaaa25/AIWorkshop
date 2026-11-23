@@ -1,17 +1,21 @@
+// Business Context AI · inscripciones a las capacitaciones gratuitas.
+// Columns: Timestamp, Email, Source, Event.
+// Event is the session id (e.g. claude-2026-12-03) or <course>-waitlist. Older rows say "Claude" or "Agentes".
+// The same email can sign up for every session; only the exact same Event is a duplicate.
+// After editing: Deploy → Manage deployments → edit the existing web app → New version (keeps the URL).
+
 function json_(payload) {
   return ContentService
     .createTextOutput(JSON.stringify(payload))
     .setMimeType(ContentService.MimeType.JSON)
 }
 
-var CLAUDE_EVENT = 'Claude'
-var AGENTES_EVENT = 'Agentes'
-
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents || '{}')
     const email = String(data.email || '').trim().toLowerCase()
-    const eventType = normalizeEvent_(data.event)
+    const eventId = normalizeEvent_(data.event)
+    const source = String(data.source || 'curso').trim().slice(0, 40)
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return json_({ ok: false, error: 'Invalid email' })
@@ -25,7 +29,7 @@ function doPost(e) {
       const values = sheet.getRange(2, 1, lastRow - 1, 4).getValues()
       const alreadyListed = values.some(function (row) {
         return String(row[1] || '').trim().toLowerCase() === email
-          && eventLabel_(row[3], row[2]) === eventType
+          && eventLabel_(row[3], row[2]) === eventId
       })
 
       if (alreadyListed) {
@@ -33,8 +37,7 @@ function doPost(e) {
       }
     }
 
-    const source = eventType === AGENTES_EVENT ? 'agentes-training' : 'claude-training'
-    sheet.appendRow([new Date(), email, source, eventType])
+    sheet.appendRow([new Date(), email, source, eventId])
     return json_({ ok: true })
   } catch (error) {
     return json_({ ok: false, error: String(error) })
@@ -62,13 +65,14 @@ function ensureEventColumn_(sheet) {
     return
   }
 
+  // Backfill legacy rows that only had a Source.
   const range = sheet.getRange(2, 3, lastRow - 1, 2)
   const rows = range.getValues()
   let changed = false
 
   for (var i = 0; i < rows.length; i++) {
     if (!String(rows[i][1] || '').trim()) {
-      const label = eventLabel_('', rows[i][0])
+      const label = legacyLabel_(rows[i][0])
       if (label) {
         rows[i][1] = label
         changed = true
@@ -81,34 +85,29 @@ function ensureEventColumn_(sheet) {
   }
 }
 
+/** Session ids are kept as-is. Requests from very old clients without an event count as legacy "Claude". */
 function normalizeEvent_(value) {
-  const text = String(value || '').trim().toLowerCase()
-  if (text.indexOf('agente') !== -1) {
-    return AGENTES_EVENT
-  }
-  return CLAUDE_EVENT
+  const text = String(value || '').trim()
+  return text ? text.slice(0, 80) : 'Claude'
 }
 
-function eventLabel_(eventCell, sourceCell) {
-  const event = String(eventCell || '').trim()
-  if (event) {
-    return normalizeEvent_(event)
-  }
-
+function legacyLabel_(sourceCell) {
   const source = String(sourceCell || '').trim().toLowerCase()
   if (!source) {
     return ''
   }
-  if (source.indexOf('agente') !== -1) {
-    return AGENTES_EVENT
-  }
-  return CLAUDE_EVENT
+  return source.indexOf('agente') !== -1 ? 'Agentes' : 'Claude'
+}
+
+function eventLabel_(eventCell, sourceCell) {
+  const event = String(eventCell || '').trim()
+  return event || legacyLabel_(sourceCell)
 }
 
 function doGet() {
   return json_({
     ok: true,
-    version: 2,
-    service: 'Inscripciones a las capacitaciones de Claude y Agentes',
+    version: 3,
+    service: 'Business Context AI · inscripciones a capacitaciones gratuitas',
   })
 }

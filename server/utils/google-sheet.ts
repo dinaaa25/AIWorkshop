@@ -21,6 +21,8 @@ export type ServiciosLead = {
   name: string
   organization: string
   proceso: string
+  /** Where the lead came from: 'servicios' (home contact form) or 'curso:<session-id>'. */
+  source: string
 }
 
 type SheetRow = {
@@ -103,28 +105,21 @@ export async function appendServiciosLead(lead: ServiciosLead): Promise<void> {
     target: 'servicios',
     headers: SERVICIOS_HEADERS,
     email: lead.email,
-    values: [lead.email, lead.name, lead.organization, lead.proceso, 'servicios'],
-    payload: { ...lead, source: 'servicios' },
+    values: [lead.email, lead.name, lead.organization, lead.proceso, lead.source],
+    payload: { ...lead },
     allowRepeat: true,
   })
 }
 
-export async function appendClaudeTrainingEntry(email: string): Promise<{ duplicate: boolean }> {
-  return await appendTrainingEntry(email, 'claude-training', 'Claude')
-}
-
-export async function appendAgentesTrainingEntry(email: string): Promise<{ duplicate: boolean }> {
-  return await appendTrainingEntry(email, 'agentes-training', 'Agentes')
-}
-
-function appendTrainingEntry(email: string, source: string, event: string): Promise<{ duplicate: boolean }> {
+/** Free course signup. The event is the session id (e.g. claude-2026-12-03) or <course>-waitlist. */
+export function appendCourseEntry(email: string, event: string): Promise<{ duplicate: boolean }> {
   return appendRow({
     target: 'claudeTraining',
     headers: TRAINING_HEADERS,
     email,
     event,
-    values: [email, source, event],
-    payload: { email, event },
+    values: [email, 'curso', event],
+    payload: { email, event, source: 'curso' },
   })
 }
 
@@ -274,7 +269,11 @@ async function appendViaSheetsApi(config: SheetConfig, row: SheetRow): Promise<{
   return { duplicate: false }
 }
 
-/** A training signup is a duplicate only when the email already has that same event. */
+/**
+ * A training signup is a duplicate only when the email already has that exact event.
+ * Rows from before the session ids have Event "Claude"/"Agentes" (or only a Source), so they never
+ * block a signup for a new session.
+ */
 function matchesEvent(existingRow: string[], row: SheetRow, hasHeader: boolean): boolean {
   if (!row.event) {
     return true

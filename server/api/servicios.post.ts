@@ -3,6 +3,7 @@ type ServiciosBody = {
   name?: string
   organization?: string
   proceso?: string
+  source?: string
   website?: string
 }
 
@@ -21,6 +22,8 @@ export default defineEventHandler(async (event) => {
   const name = clean(body.name, 120)
   const organization = clean(body.organization, 160)
   const proceso = clean(body.proceso, 1000)
+  const rawSource = clean(body.source, 80)
+  const source = /^[a-z0-9:-]+$/.test(rawSource) ? rawSource : 'servicios'
 
   if (!EMAIL_PATTERN.test(email)) {
     throw createError({
@@ -36,7 +39,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  await appendServiciosLead({ email, name, organization, proceso })
+  await appendServiciosLead({ email, name, organization, proceso, source })
 
   return { ok: true }
 })
